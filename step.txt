@@ -1,0 +1,7 @@
+uv init .
+uv add fastapi
+uv add python-dotenv
+uv add fastapi-users[sqlalchemy]
+uv add imagekitio
+uv add uvicorn[standard]
+uv add aiosqlite   
