@@ -1,6 +1,18 @@
 from fastapi import FastAPI ,HTTPException
-from app.schema import PostCreate
-app = FastAPI()
+from app.schema import PostCreate , PostResponse
+from app.db import Post , create_db_and_tables , get_async_session
+from sqlalchemy.ext.asyncio import AsyncSession
+from contextlib import asynccontextmanager
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await create_db_and_tables()
+    yield
+
+
+
+app = FastAPI(lifespan=lifespan)
 
 text_post = {
     1: {"title": "post", "content": "cool post"},
@@ -24,7 +36,7 @@ def get_all_posts(limit: int = None):
     return text_post
 
 @app.get("/posts/{id}")
-def get_post(id:int):
+def get_post(id:int)->PostResponse:
     if id not in text_post:
         raise HTTPException(status_code=404,detail="post not found")
     return text_post.get(id)
@@ -37,8 +49,9 @@ def get_post(id:int):
 #fastapi automatically identifies the type of  the data sent
 #based on the data set in schema
 
+#we can only return data from the function which is the type of postresponse
 @app.post("/posts")
-def create_post(post:PostCreate):
+def create_post(post:PostCreate)-> PostResponse:
     new_post={"title":post.title,"content":post.content}
     text_post[max(text_post.keys())+1] = new_post
     return new_post
