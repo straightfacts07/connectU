@@ -5,3 +5,5 @@ uv add fastapi-users[sqlalchemy]
 uv add imagekitio
 uv add uvicorn[standard]
 uv add aiosqlite   
+uv add streamlit
+uv run streamlit run frontend.py
